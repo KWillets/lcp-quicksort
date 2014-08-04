@@ -13,10 +13,20 @@ Lemma 1 (from lcp merge sort paper https://www.jstage.jst.go.jp/article/ipsjdc/4
 If A > C and B > C, and lcp(A,C) > lcp(B,C), then A < B. Proof follows from the fact that the first character
 after the lcp is the tie breaker for the comparison, and if lcp(A,C) > lcp(B,C), then B[lcp(B,C)] > C[lcp(B,C)] == A[lcp(B,C)], so B > A.
 
+ASCII art version:
+
+If we imagine the per-character strcmp results as follows (either = or >), we see why a longer lcp matters:
+
+    C: XXXXXXXXXXX... (some chars)
+    A: ========>
+    B: ===>
+
+The point where B is > C is the same as where B > A.
+
 We can reverse > and < if needed (a property which I will call "direction"), if C > A,B.
 
 In quicksort, the obvious candidate for C is the pivot P_prev from a previous phase of the sort; every element in a recursive call to quicksort 
-has been compared to P_prev in the preceding round (except the initial call, where P_prev can be considered to be the
+has been compared to P\_prev in the preceding round (except the initial call, where P\_prev can be considered to be the
 empty string).  In fact, the actual value of P_prev is irrelevant for Lemma 1 except for its 
 direction.
 
