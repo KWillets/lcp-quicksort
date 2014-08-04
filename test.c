@@ -2,13 +2,22 @@
 #include "lcp-quicksort.h"
 
 void dumpitems( Item s[], int n) {
-  for(int i=0; i < n; i++ ) {
+  int i;
+  for( i=0; i < n; i++ ) {
     printf( "%s\n", s[i] );
   };
   printf("----\n\n");
 }
 
 int main(int argc, char **argv) {
+
+  char * t[] = {"aaa", "aab", "aaa", "aba", "aaa", "aba", "aaa","aba"};
+  stringsort( t, 8 );
+  dumpitems(t,8);
+  char * u[] = {"bbb", "ccc", "aaa", "ddd", "aab", "aac", "aad", "ccd", "bbc", "bbz", "bbd","eee", "aad","aaz" };
+  stringsort( u, 14 );
+  dumpitems(u,14);
+
   /*
   Item s[]={"aab","aaa"};
   stringsort(s,2);

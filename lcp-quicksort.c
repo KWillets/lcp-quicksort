@@ -85,15 +85,3 @@ void stringsort( Item a[], int n ) {
   free(lcp);
 }
 
-int main( int argc, char **argv ) {
-  char * t[] = {"aaa", "aab", "aaa", "aba", "aaa", "aba", "aaa","aba"};
-  stringsort( t, 8 );
-  for( int i = 0; i < 8; i++ ) 
-    printf( "%s\n", t[i]);
-  printf("\n----\n");
-  char * u[] = {"bbb", "ccc", "aaa", "ddd", "aab", "aac", "aad", "ccd", "bbc", "bbz", "bbd","eee", "aad","aaz" };
-  stringsort( u, 14 );
-  for( int i = 0; i < 14; i++ ) 
-    printf( "%s\n", u[i]);
-  return 0;
-}
