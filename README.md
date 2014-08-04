@@ -76,4 +76,7 @@ The algorithm:
     3.  If direction == -1, do as in step 2 but reverse the partition (<, ==, >).
     4.  lcpquicksort( a, lcp, lo, lt-1, direction )
     5.  lcpquicksort( a, lcp, gt+1, hi, direction )
-    
+    6.  split the middle partition by doing character comparisons against P_new and update/lengthen each element's lcp
+        set lo,hi,lt,gt to the bounds of this split
+    7.  lcpquicksort( a, lcp, lo, lt-1, -1 )
+    8.  lcpquicksort( a, lcp, gt+1, hi, 1 )
