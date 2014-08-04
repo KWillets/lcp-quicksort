@@ -21,7 +21,7 @@ If we imagine the per-character strcmp results as follows (either = or >), we se
     A: ========>
     B: ===>
 
-The character point where B > C is the same as where B > A.
+The character point where B > C is also the point where B > A.
 
 We can reverse > and < if needed (a property which I will call "direction"), if C > A,B.  Use of a pivot typically creates two ranges with opposite direction.
 
