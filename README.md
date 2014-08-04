@@ -23,7 +23,7 @@ If we imagine the per-character strcmp results as follows (either = or >), we se
 
 The point where B is > C is the same as where B > A.
 
-We can reverse > and < if needed (a property which I will call "direction"), if C > A,B.
+We can reverse > and < if needed (a property which I will call "direction"), if C > A,B.  Use of a pivot typically creates two ranges with opposite direction.
 
 In quicksort, the obvious candidate for C is the pivot P_prev from a previous phase of the sort; every element in a recursive call to quicksort 
 has been compared to P\_prev in the preceding round (except the initial call, where P\_prev can be considered to be the
@@ -46,19 +46,19 @@ to string comparison against P_new and given a second phase of (<.=,>) partition
 
 The algorithm:
 
-inputs:
+    inputs:
   
-a[] an array of strings
-lcp[] the lcp's of each a[i] against P_prev
-lo, hi:  the subrange of a[] being sorted
-direction:  1 if P_prev < a[lo:hi], -1 if P_prev < a[lo:hi]
-
-lcpquicksort( a, lcp, lo, hi, direction )
-0.  If lo >= hi return.
-1.  Pick a pivot P_new among a[lo:hi].  Set vlcp = lcp(P_new, P_old).
-2.  if direction == 1, partition a and lcp into 3 buckets having lcp(a[i], P_prev) > vlcp, lcp == vlcp, and lcp < vlcp.  Let lt:gt be the
+    a[] an array of strings
+    lcp[] the lcp's of each a[i] against P_prev
+    lo, hi:  the subrange of a[] being sorted
+    direction:  1 if P_prev < a[lo:hi], -1 if P_prev < a[lo:hi]
+    
+    lcpquicksort( a, lcp, lo, hi, direction )
+    0.  If lo >= hi return.
+    1.  Pick a pivot P_new among a[lo:hi].  Set vlcp = lcp(P_new, P_old).
+    2.  if direction == 1, partition a and lcp into 3 buckets having lcp(a[i], P_prev) > vlcp, lcp == vlcp, and lcp < vlcp.  Let lt:gt be the
 range of ==.
-3.  If direction == -1, do as in step 2 but reverse the partition (<, ==, >).
-4.  lcpquicksort( a, lcp, lo, lt-1, direction )
-5.  lcpquicksort( a, lcp, gt+1, hi, direction )
-6.  
+    3.  If direction == -1, do as in step 2 but reverse the partition (<, ==, >).
+    4.  lcpquicksort( a, lcp, lo, lt-1, direction )
+    5.  lcpquicksort( a, lcp, gt+1, hi, direction )
+    6.  
