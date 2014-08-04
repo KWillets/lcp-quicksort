@@ -49,7 +49,9 @@ divide-and-conquer strategy first at splitting out lcp's which do not need any f
      a[hi]:===>
 
 LCP Quicksort therefore uses two phases:  After a new pivot P_new is selected, elements are partitioned by lcp's 
-which are greater than, equal to, or less than P_new's.  
+which are greater than, equal to, or less than P_new's.  In the second phase, the middle partition is split by actual 
+character comparisons against P\_new, lcp's are updated, and the two subpartitions are recursively sorted, for a total 
+of five partitions and four recursions (the middle partition contains the pivot and all equal elements).  
 
 Where the lcp's are strictly unequal, string comparison against P_new would yield either a shorter lcp or the same length, so 
 these sections retain P_prev as their previous pivot.  This key optimization prevents lcp's from decreasing.
