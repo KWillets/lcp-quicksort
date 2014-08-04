@@ -1,65 +1,99 @@
-
-#include <stdlib.h>
 #include <stdio.h>
-// three-way partitioning
-// from sedgewick
-// modified to bin lcp's
-// 2 stages
-// first bin by lcp <,==,> lcp(pivot)
-// then bin == by <,==,> pivot
+#include <stdlib.h>
 typedef char * Item;
 
 int lcpstrcmp( char *p, char *q, int *lcp) {
-  
-  for( int i = *lcp;  p[i] && p[i] == q[i]; i++ ) 
+  int i;
+  for( i = *lcp;  p[i] && p[i] == q[i]; i++ ) 
     ;
   *lcp = i;
   return q[i]-p[i]; // >0 ==> q > p
 }
 
-#define exch(A,B) { typeof(A) _tmp=A; A=B; B=_tmp; }
+void  exch( Item a[], int lcp[], int I, int J) 
+{ Item  __tmp = a[I]; a[I]=a[J]; a[J]=__tmp;
+  int  __itmp = lcp[I]; lcp[I]=lcp[J], lcp[J]=__itmp; } 
 
-void lcpquicksort(Item a[], int lcp[], int l, int r, int direction)
-{ int i = l-1, j = r, p = l-1, q = r; Item v = a[r]; int vlcp = lcp[r];
-  if (r <= l) return;
-  for (;;)
-    { 
-      if( direction > 0 ) {
-        while (lcp[++i] > vlcp ) ;
-        while (vlcp > lcp[--j]) if (j == l) break;
-      } else {
-        while (lcp[++i] < vlcp ) ;
-        while (vlcp < lcp[--j]) if (j == l) break;
+// check lcp's are partitioned in opposite order of direction
+// longer lcp, positive direction => lt
+// etc.
+void check_partition( int lcp[], int lo, int hi, int lt, int gt, int direction, int v ) {
+  // a[lo..lt-1] < v = a[lt..gt] < a[gt+1..hi]
+  int i;
+  for(  i = lo; i <= hi; i++ ) {
+    if( i < lt && -direction*lcp[i] >= -direction*v ) {
+      printf("smaller elt %d  is >= v\n", i);
+      break;
+    } else if( i >= lt && i <= gt && lcp[i] != v ) {
+      printf("equal elt %d is != v\n", i);
+      break;
+    } else if( i > gt && -direction*lcp[i] <= -direction*v ) {
+      printf("larger elt %d is <= v\n",i);
+      break;
+    }
+  }
+  if( i <= hi ) {
+    printf("i = %d, lcp[i] = %d, lo = %d, lt = %d, gt = %d, hi = %d\n", i, lcp[i], lo, lt, gt, hi );
+    for( i=lo; printf(","), i<=hi; i++ ) {
+      printf("%d",lcp[i]);
+    }
+    printf("\n");
+  }
+}
+
+void lcpquicksort( Item a[], int lcp[], int lo, int hi, int direction ) {
+  if (hi <= lo) return;
+  int lt = lo, gt = hi;
+  int v = lcp[lo];
+  int i = lo + 1;
+  while (i <= gt)
+    {
+      int t = lcp[i];
+      if( direction < 0 ) {  // direction of old pivot determines effect of lcp > or < pivot
+	if      (t < v) exch(a, lcp, lt++, i++);
+	else if (t > v) exch(a, lcp, i, gt--);
+	else            i++;
+      } else { // old pivot was < a[lo:hi]
+	if      (t > v) exch(a, lcp, lt++, i++); // longer prefix ==> precedes pivot
+	else if (t < v) exch(a, lcp, i, gt--);
+	else            i++;
       }
-      if (i >= j) break;
-      exch(a[i], a[j]);exch(lcp[i],lcp[j]);
-      if (lcp[i] == vlcp) { p++; exch(a[p], a[i]); exch(lcp[p], lcp[i]); }
-      if (vlcp == lcp[j]) { q--; exch(a[j], a[q]); exch(lcp[j], lcp[q]); }
-    } 
-  exch(a[i], a[r]); exch(lcp[i],lcp[r]); j = i-1; i = i+1;
-  for (k = l; k < p; k++, j--) { exch(a[k], a[j]); exch(lcp[k],lcp[j]); }
-  for (k = r-1; k > q; k--, i++) { exch(a[i], a[k]); exch(lcp[i], lcp[k]); }
+    }
+  // a[lo..lt-1] < v = a[lt..gt] < a[gt+1..hi]
+  check_partition( lcp, lo, hi, lt, gt, direction, v );
+  lcpquicksort( a, lcp, lo, lt-1, direction );
+  lcpquicksort( a, lcp, gt+1, hi, direction );
 
-  lcpquicksort(a, lcp, l, j, direction);
-  lcpquicksort(a, lcp, i, r, direction);
+  // now pivot middle by char comparisons
+  lo = lt; hi = gt;
+  Item vv = a[lo];
+  i = lo+1;
+  while( i <= gt )
+    {
+      int cmpr = lcpstrcmp( a[i], vv, lcp+i );
+      if      (cmpr > 0) exch(a, lcp, lt++, i++);
+      else if (cmpr < 0) exch(a, lcp, i, gt--);
+      else            i++;
+    }
+  lcpquicksort( a, lcp, lo, lt-1, -1 );
+  lcpquicksort( a, lcp, gt+1, hi,  1 );
+}
 
-  // comparison-based sort of middle
-  // v is at i ?
-  l=j+1;r=i-1;
-  i = l, j = r-1, p = l-1, q = r;  
-  for (;;)
-    { 
-      int ieq,jeq;
-      while ( (ieq=lcpstrcmp(a[i], v, lcp+i)) > 0 ) i++ ;
-      while ( (jeq=lcpstrcmp(v, a[j], lcp+j)) > 0 ) if (--j == l) break;
-      if (i >= j) break;
-      exch(a[i], a[j]);exch(lcp[i],lcp[j]);
-      if (ieq == 0) { p++; exch(a[p], a[i]); exch(lcp[p], lcp[i]); }
-      if (jeq == 0) { q--; exch(a[j], a[q]); exch(lcp[j], lcp[q]); }
-    } 
-  exch(a[i], a[r]); exch(lcp[i],lcp[r]); j = i-1; i = i+1;
-  for (k = l; k < p; k++, j--) { exch(a[k], a[j]); exch(lcp[k],lcp[j]);}
-  for (k = r-1; k > q; k--, i++) { exch(a[i], a[k]); exch(lcp[i], lcp[k]); }
-  lcpquicksort(a, lcp, l, j, -1 );
-  lcpquicksort(a, lcp, i, r, 1 );
+void stringsort( Item a[], int n ) {
+  int *lcp = calloc( n, sizeof(int));
+  lcpquicksort( a, lcp, 0, n-1, 1 );
+  free(lcp);
+}
+
+int main( int argc, char **argv ) {
+  char * t[] = {"aaa", "aab", "aaa", "aba", "aaa", "aba", "aaa","aba"};
+  stringsort( t, 8 );
+  for( int i = 0; i < 8; i++ ) 
+    printf( "%s\n", t[i]);
+  printf("\n----\n");
+  char * u[] = {"bbb", "ccc", "aaa", "ddd", "aab", "aac", "aad", "ccd", "bbc", "bbz", "bbd","eee", "aad","aaz" };
+  stringsort( u, 14 );
+  for( int i = 0; i < 14; i++ ) 
+    printf( "%s\n", u[i]);
+  return 0;
 }
