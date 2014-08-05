@@ -8,3 +8,6 @@ OBJ = lcp-quicksort.o test.o
 
 test: $(OBJ)
 	gcc -o $@ $^ $(CFLAGS)
+
+lcpsort: lcp-quicksort.o lcpsort.o
+	gcc -o $@ $^ $(CFLAGS)
