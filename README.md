@@ -30,9 +30,7 @@ has been compared to some P\_prev in the preceding round (except the initial cal
 the empty string).  
 
 Given the direction of P_prev and the lcp's of every element against it, we can 
-determine the order of any element A against any new pivot P\_new by comparing lcp(A,P\_prev) and lcp(P\_new, P\_prev).  
-Only if the lcp's are equal do we need to do further character comparisons to determine the order of A and P_new, so we aim our 
-divide-and-conquer strategy first at splitting out lcp's which do not need any further character comparisons.
+determine the order of any element A against any new pivot P\_new by first comparing lcp(A,P\_prev) and lcp(P\_new, P\_prev), and only on equality doing character comparisons.  This process is essentially a two-key comparison.
 
     P_prev:XXXXXXXXXXXX....
      a[lo]:========>  (all lcp's longer than P_new's)
@@ -49,12 +47,12 @@ divide-and-conquer strategy first at splitting out lcp's which do not need any f
      a[hi]:===>
 
 LCP Quicksort therefore uses two phases:  After a new pivot P_new is selected, elements are partitioned by lcp's 
-which are greater than, equal to, or less than P_new's.  In the second phase, the middle partition is split by actual 
-character comparisons against P\_new, lcp's are updated, and the two subpartitions are recursively sorted, for a total 
-of five partitions and four recursions (the middle partition contains the pivot and all equal elements).  
+which are greater than, equal to, or less than P_new's, and the two unequal partitions are recursively sorted.  In the second phase, the middle partition is split by actual 
+character comparisons against P\_new, lcp's are updated, and the two unequal subpartitions are 
+recursively sorted, for a total of five partitions and four recursions (the middle partition contains the pivot and all equal elements, as with multikey quicksort).  
 
-Where the lcp's are strictly unequal, string comparison against P_new would yield either a shorter lcp or the same length, so 
-these sections retain P_prev as their previous pivot.  This key optimization prevents lcp's from decreasing.
+In Phase 1, where the lcp's are strictly unequal, string comparison against P_new would yield either a shorter lcp or the same length, so 
+these sections are sorted separately, retaining P_prev as their previous pivot, instead of merging them with the adjacent partitions from Phase 2.  This is equivalent to two rounds of multikey quicksort, where the first key is (decreasing or increasing) lcp, and the second is actual character comparisons.  This key optimization prevents lcp's from decreasing.
 
 Only elements which have equal lcp's against the previous pivot are ambiguous; these are subjected
 to string comparison against P_new and given a second phase of (<.=,>) partitioning, and they receive updated lcp's against the new pivot.
