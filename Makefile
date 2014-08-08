@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-I. -g 
+CFLAGS=-I. -O3
 DEPS = lcp-quicksort.h
 OBJ = lcp-quicksort.o test.o 
 
