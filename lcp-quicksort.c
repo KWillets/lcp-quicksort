@@ -60,7 +60,7 @@ void lcpquicksort( Item a[], int lcp[], int lo, int hi, int direction ) {
       }
     }
   // a[lo..lt-1] < v = a[lt..gt] < a[gt+1..hi]
-  check_partition( lcp, lo, hi, lt, gt, direction, v );
+  // debug:  check_partition( lcp, lo, hi, lt, gt, direction, v );
   lcpquicksort( a, lcp, lo, lt-1, direction );
   lcpquicksort( a, lcp, gt+1, hi, direction );
 
