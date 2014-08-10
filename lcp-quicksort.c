@@ -3,11 +3,13 @@
 typedef char * Item;
 
 int lcpstrcmp( char *p, char *q, int *lcp) {
-  int i;
-  for( i = *lcp;  p[i] && p[i] == q[i]; i++ ) 
-    ;
-  *lcp = i;
-  return q[i]-p[i]; // >0 ==> q > p
+  char *pi=p+*lcp, *qi=q+*lcp;
+  while( *pi && !(*qi-*pi) ) {
+    pi++;
+    qi++;
+  }
+  *lcp = pi-p;
+  return *qi-*pi;
 }
 
 void  exch( Item a[], int lcp[], int I, int J) 

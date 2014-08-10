@@ -15,5 +15,8 @@ lcpsort: lcp-quicksort.o lcpsort.o
 genesort: lcp-quicksort.o genesort.o
 	gcc -o $@ $^ $(CFLAGS)
 
+blobsort: lcp-quicksort.o blobsort.o
+	gcc -o $@ $^ $(CFLAGS)
+
 clean:  
 	rm $(OBJ)
