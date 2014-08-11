@@ -64,11 +64,11 @@ The algorithm:
     a[] an array of strings
     lcp[] the lcp's of each a[i] against P_prev
     lo, hi:  the subrange of a[] being sorted
-    direction:  1 if P\_prev < a[lo:hi], -1 if P\_prev < a[lo:hi]
+    direction:  1 if P_prev < a[lo:hi], -1 if P_prev < a[lo:hi]
     
     lcpquicksort( a, lcp, lo, hi, direction )
     0.  If lo >= hi return.
-    1.  Pick a pivot P\_new among a[lo:hi].  Set vlcp = lcp(P\_new, P\_old).
+    1.  Pick a pivot P_new among a[lo:hi].  Set vlcp = lcp(P_new, P_old).
     2.  if direction == 1, partition a and lcp into 3 buckets 
     having lcp(a[i], P\_prev) > vlcp, lcp == vlcp, and lcp < vlcp.  Let lt:gt be the range of ==.
     3.  If direction == -1, do as in step 2 but reverse the partition (<, ==, >).
@@ -78,3 +78,27 @@ The algorithm:
         set lo,hi,lt,gt to the bounds of this split
     7.  lcpquicksort( a, lcp, lo, lt-1, -1 )
     8.  lcpquicksort( a, lcp, gt+1, hi, 1 )
+
+
+TODO: 
+
+Consecutive LCP's
+
+This version of the algorithm does not attempt to construct LCP's of consecutive keys (where lcp[i] = lcp(a[i],a[i-1]) for i>0, lcp[0]=0),
+ since it mainly saves LCP's vs. the last pivot each key has encountered.  However it may be possible to build consecutive LCP's 
+while unrolling the recursion and return a useful list of consecutive lcp's to the caller.
+
+If we make the recursive assumption that lcpquicksort has returned consecutive LCP subarrays from each of the four recursive calls above, we
+simply need to modify elements at the boundaries of the subarrays to make lcp[lo..hi] consecutive as well.
+
+For direction == 1:
+
+For the LCP-partitioned ranges sorted in steps 4 and 5, for lcp(a[gt-1], a[gt]) is the maximum lcp(a[i], P_prev) for gt < i <= hi.
+This follows from the partitioning and the fact that if A,B > P_prev and lcp(A, P_prev) > lcp(B,P_prev), then lcp(A,B)=lcp(B,P_prev).  So
+if we remember the maximum value while partitioning, we can apply it after the recursion has returned.
+
+Similarly lcp(a[lt-1], a[lt]) == lcp(a[lt], P_prev) == vlcp.
+
+In steps 7 and 8, lcp( a[lt-1], a[lt] ) is the maximum of lcp(a[i], P_new) for lo <= i < lt, and similar for the lcp(a[gt],a[gt+1]), since
+the closest key to the pivot in either direction always has the longest lcp of all the comparands.
+
