@@ -15,6 +15,20 @@ void  exch( Item a[], int lcp[], int I, int J)
 { Item  __tmp = a[I]; a[I]=a[J]; a[J]=__tmp;
   int  __itmp = lcp[I]; lcp[I]=lcp[J], lcp[J]=__itmp; } 
 
+void lcpinsertionsort( Item a[], int lcp[], int lo, int hi, int direction) {
+  int i,j;
+  if( direction == 1 )
+    for( i = lo+1; i <= hi; i++ ) {
+      for( j= i; j > lo && lcp[j] > lcp[j-1]; j-- )
+	exch(a, lcp, j, j-1);
+      for(  ; j > lo && lcp[j] == lcp[j-1] && lcpstrcmp( a[j-1], a[j], lcp+j) < 0; j-- )
+	exch(a, lcp, j, j-1);	
+    }
+  else
+    ;//todo
+    
+}
+
 void lcpquicksort( Item a[], int lcp[], int lo, int hi, int direction ) {
   if (hi <= lo) return;
   int lt = lo, gt = hi;
