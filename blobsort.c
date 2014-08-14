@@ -35,11 +35,11 @@ char *readitems( char *fname, int *pn ) {
 int main(int argc, char **argv) {
 
   if( argc >1 ) {
-    int n=0;
+    int n=0,i=0;
     char *s = readitems( argv[1], &n );
 
     Item *a = calloc( n, sizeof(Item));
-    for( int i = 0; i < n; i++ )
+    for(  i = 0; i < n; i++ )
       a[i] = s+i;
 
     int *lcp = calloc( n, sizeof(int));

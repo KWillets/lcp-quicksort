@@ -1,10 +1,11 @@
 CC=gcc
-CFLAGS=-I. -O4
+CFLAGS=-I. -O4 -funroll-loops
+#CFLAGS=-I. -g 
 DEPS = lcp-quicksort.h
 OBJ = lcp-quicksort.o test.o 
 
 %.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC)  -c -o $@ $< $(CFLAGS)
 
 test: $(OBJ)
 	gcc -o $@ $^ $(CFLAGS)

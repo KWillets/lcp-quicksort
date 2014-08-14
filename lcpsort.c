@@ -4,7 +4,7 @@
 #include <time.h>
 #include "lcp-quicksort.h"
 
-void dumpitems( Item s[], int n, int lcp[]) {
+void dumpitems( Item s[], int n, Lcp lcp[]) {
   int i;
   for( i=0; i < n; i++ ) {
     printf( "%s", s[i] );
@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     int n=0;
     Item *a = readitems( argv[1], &n );
 
-    int *lcp = calloc( n, sizeof(int));
+    Lcp *lcp = calloc( n, sizeof(Lcp));
 
     int t=clock();
 
@@ -51,7 +51,8 @@ int main(int argc, char **argv) {
     float secs = (clock()-t)*1.0/CLOCKS_PER_SEC;
     fprintf(stderr, "time=%f\n", secs );
 
-    dumpitems(a,n,lcp);
+    //    dumpitems(a,n,lcp);
+    exit(0);
   }
   else printf("usage: %s <filename>\n", argv[0]);
 }

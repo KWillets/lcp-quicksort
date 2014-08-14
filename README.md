@@ -102,3 +102,23 @@ Similarly lcp(a[lt-1], a[lt]) == lcp(a[lt], P_prev) == vlcp.
 In steps 7 and 8, lcp( a[lt-1], a[lt] ) is the maximum of lcp(a[i], P_new) for lo <= i < lt, and similar for the lcp(a[gt],a[gt+1]), since
 the closest key to the pivot in either direction always has the longest lcp of all the comparands.
 
+
+Direction can be encoded in the sign bit of lcp[i]
+
+To obviate the direction flag, the result of lcpstrcmp can flip the sign bit of 
+the lcp returned based on whether a[i] > or < the pivot.  The lcp's passed in will
+be all >= 0 or all <= 0 when direction == -1 or 1, resp., and regular int comparisons
+will put them in the correct order (instead of the two cases using separate code).  
+
+lcpstrcmp has to use abs(*lcp) in this case.  
+
+
+Shorter/Rounded lcp's
+
+A maximum on lcp length should just incur more comparisons but not sink the whole algorithm.  The impact 
+is that a) more keys will agree on lcp and incur character comparisons in the middle, and b) character comparisons 
+will be duplicated at positions beyond the maximum, but pivoting will be correct at each level.
+
+Rounding may also work, with similar impact of more comparisons but correct behavior.
+lcp's can be small integers in units of k characters, eg k = 16 or the cache line size, to save
+bits.
