@@ -17,6 +17,17 @@ void  exch( Item a[], Lcp lcp[], int I, int J)
   Item  __tmp = a[I]; a[I]=a[J]; a[J]=__tmp;
   Lcp  __itmp = lcp[I]; lcp[I]=lcp[J], lcp[J]=__itmp; } 
 
+int med3func(Lcp va, Lcp vb, Lcp vc)
+{  
+  if (va == vb)
+    return va;
+  if (vc == va || vc == vb)
+    return vc;  
+  return va < vb ?
+    (vb < vc ? vb : (va < vc ? vc : va ) )
+    : (vb > vc ? vb : (va < vc ? va : vc ) );
+}
+
 void lcpinsertionsort( Item a[], Lcp lcp[], int lo, int hi, int direction) {
   int i,j;
 
@@ -40,7 +51,11 @@ void lcpinsertionsort( Item a[], Lcp lcp[], int lo, int hi, int direction) {
 void lcpquicksort( Item a[], Lcp lcp[], int lo, int hi, int direction ) {
   if (hi <= lo) return;
   int lt = lo, gt = hi;
-  int v = lcp[lo];
+  int n = hi - lo + 1;
+  int v;
+  v = n > 1000  ? med3func( lcp[lo], lcp[lo+n/2], lcp[hi] ) :
+    lcp[lo];
+
   int i = lo + 1;
   if( direction < 0 ) {  // direction of old pivot determines effect of lcp > or < pivot
     while (i <= gt) {

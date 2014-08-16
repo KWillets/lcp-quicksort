@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
     float secs = (clock()-t)*1.0/CLOCKS_PER_SEC;
     fprintf(stderr, "time=%f\n", secs );
 
-    //    dumpitems(a,n,lcp);
+    dumpitems(a,n,lcp);
     exit(0);
   }
   else printf("usage: %s <filename>\n", argv[0]);
