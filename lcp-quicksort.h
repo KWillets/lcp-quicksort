@@ -1,6 +1,6 @@
 
 typedef char * Item;
-typedef unsigned int Lcp;
+typedef int Lcp;
 
 void lcpquicksort(Item a[], Lcp lcp[], int l, int r, int direction);
 void stringsort( Item a[], int n );

@@ -38,7 +38,7 @@ Item *readitems( char *fname, int *pn ) {
 int main(int argc, char **argv) {
 
   if( argc >1 ) {
-    int n=0;
+    int n=0, d=0, i;
     Item *a = readitems( argv[1], &n );
 
     Lcp *lcp = calloc( n, sizeof(Lcp));
@@ -49,7 +49,10 @@ int main(int argc, char **argv) {
 
     //    stringsort(a,n);
     float secs = (clock()-t)*1.0/CLOCKS_PER_SEC;
-    fprintf(stderr, "time=%f\n", secs );
+
+    for( i = 0; i < n; i++)
+      d += lcp[i];
+    fprintf(stderr, "n=%d D=%d time=%6.5f\n",n, d, secs );
 
     dumpitems(a,n,lcp);
     exit(0);

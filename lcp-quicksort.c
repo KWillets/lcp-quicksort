@@ -3,13 +3,11 @@
 #include "lcp-quicksort.h"
 
 int lcpstrcmp( char *p, char *q, Lcp *lcp) {
-  char *pi=p+*lcp, *qi=q+*lcp;
-  while( *pi && !(*qi-*pi) ) {
-    pi++;
-    qi++;
-  }
-  *lcp = pi-p;
-  return *qi-*pi;
+  int ret,i;
+  for( i=*lcp; !(ret=q[i]-p[i]) && q[i]; i++ )
+    ;
+  *lcp = i;
+  return ret;
 }
 
 void  exch( Item a[], Lcp lcp[], int I, int J) 
@@ -41,10 +39,20 @@ void lcpinsertionsort( Item a[], Lcp lcp[], int lo, int hi, int direction) {
 	exch(a, lcp, j, j-1);
 
   // sort runs of identical lcp
-  for( i = lo+1; i <= hi; i++ ) 
-    ;
-  for(  ; j > lo && lcp[j] == lcp[j-1] && lcpstrcmp( a[j-1], a[j], lcp+j) < 0; j-- )
-    exch(a, lcp, j, j-1);	
+  int r=hi, rcpl = lcp[hi];
+  for( i = hi-1; i >= lo; i-- ) 
+    if( lcp[i] == lcpr ) {
+      int ilcp = lcpr;
+      int cmpr = lcpstrcmp( a[i], a[i+1], &ilcp);
+      if( cmpr > 0 ) {
+	for( j = i; j > l && ( ilcp < lcp[j] || ilcp == lcp[j] && lcpstrcmp( a[j-1],a[j], &ilcp) < 0 ); j++ )
+	  {
+	    // move lcp's
+	  exch(a, lcp, j, j+1);
+	  }
+      }
+    } else 
+      lcpr = lcp[r = i];
 
 }
 
@@ -52,36 +60,24 @@ void lcpquicksort( Item a[], Lcp lcp[], int lo, int hi, int direction ) {
   if (hi <= lo) return;
   int lt = lo, gt = hi;
   int n = hi - lo + 1;
+  if( n < 10 ) {
+    lcpinsertionsort( a, lcp, lo, hi, direction );
+    return;
+  }
   int v;
   if( n > 1000 ) exch( a, lcp, lo,  med3func( lcp, lo, lo+n/2, hi ));
 
   v=lcp[lo];
   int i = lo + 1;
   if( direction < 0 ) {  // direction of old pivot determines effect of lcp > or < pivot
-    /*    i=lo;
-    gt = hi;
-    while( i < gt ) {  // two-color DNF 
-      while( lcp[gt] > v && i < gt ) gt--;
-      while( lcp[i] <= v && i < gt ) i++;
-      if( i < gt ) { exch( a, lcp, i, gt ); gt--; i++; };
-    }
-    lt=lo;
-    i=gt;
-    while( i > lt ) {
-      while( lcp[lt] < v && i > lt ) lt++;
-      while( lcp[i] == v && i > lt ) i--;
-      if( i > lt ) { exch( a, lcp, i, lt ); lt++; i--; };
-    }
-    */
-        while (i <= gt) {
+    while (i <= gt) {
       int t = lcp[i];
       if      (t < v) exch(a, lcp, lt++, i++);
       else if (t > v) exch(a, lcp, i, gt--);
       else            i++;
       }
-    
   } else {
-      while (i <= gt) { // old pivot was < a[lo:hi]
+    while (i <= gt) { // old pivot was < a[lo:hi]
       int t = lcp[i];
       if      (t > v) exch(a, lcp, lt++, i++); // longer prefix ==> precedes pivot
       else if (t < v) exch(a, lcp, i, gt--);
