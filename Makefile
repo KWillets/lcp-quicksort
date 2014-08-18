@@ -1,6 +1,6 @@
 CC=gcc
-#CFLAGS=-I. -O4 -funroll-loops
-CFLAGS=-I. -g 
+CFLAGS=-I. -O4 -funroll-loops
+#CFLAGS=-I. -g 
 DEPS = lcp-quicksort.h
 OBJ = lcp-quicksort.o test.o 
 

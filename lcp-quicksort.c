@@ -39,13 +39,13 @@ void lcpinsertionsort( Item a[], Lcp lcp[], int lo, int hi, int direction) {
 	exch(a, lcp, j, j-1);
 
   // sort runs of identical lcp
-  int r=hi, rcpl = lcp[hi];
+  int r=hi, lcpr = lcp[hi];
   for( i = hi-1; i >= lo; i-- ) 
     if( lcp[i] == lcpr ) {
       int ilcp = lcpr;
       int cmpr = lcpstrcmp( a[i], a[i+1], &ilcp);
       if( cmpr > 0 ) {
-	for( j = i; j > l && ( ilcp < lcp[j] || ilcp == lcp[j] && lcpstrcmp( a[j-1],a[j], &ilcp) < 0 ); j++ )
+	for( j = i; j < r && ( ilcp < lcp[j] || (ilcp == lcp[j] && lcpstrcmp( a[j-1],a[j], &ilcp) < 0) ); j++ )
 	  {
 	    // move lcp's
 	  exch(a, lcp, j, j+1);
@@ -60,10 +60,7 @@ void lcpquicksort( Item a[], Lcp lcp[], int lo, int hi, int direction ) {
   if (hi <= lo) return;
   int lt = lo, gt = hi;
   int n = hi - lo + 1;
-  if( n < 10 ) {
-    lcpinsertionsort( a, lcp, lo, hi, direction );
-    return;
-  }
+  
   int v;
   if( n > 1000 ) exch( a, lcp, lo,  med3func( lcp, lo, lo+n/2, hi ));
 
