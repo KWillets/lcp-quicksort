@@ -34,7 +34,8 @@ has been compared to some P\_prev in the preceding round (except the initial cal
 the empty string).  
 
 Given the direction of P_prev and the lcp's of every element against it, we can 
-determine the order of any element A against any new pivot P\_new by first comparing lcp(A,P\_prev) and lcp(P\_new, P\_prev), and only on equality doing character comparisons.  This process is essentially a two-key comparison.
+determine the order of any element A against any new pivot P\_new by first comparing lcp(A,P\_prev) and lcp(P\_new, P\_prev), and only on equality doing character comparisons.  
+
 
     P_prev:XXXXXXXXXXXX....
      a[lo]:========>  (all lcp's longer than P_new's)
@@ -49,6 +50,8 @@ determine the order of any element A against any new pivot P\_new by first compa
      ...  :==>
       ... :=>
      a[hi]:===>
+
+(Figure 2.  LCP's after 3-way partitioning)
 
 LCP Quicksort therefore uses two phases:  After a new pivot P_new is selected, elements are partitioned by lcp's 
 which are greater than, equal to, or less than P_new's, and the two unequal partitions are recursively sorted.  In the second phase, the middle partition is split by actual 
