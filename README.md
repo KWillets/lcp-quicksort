@@ -1,7 +1,10 @@
 lcp-quicksort
 =============
 
-An string quicksort with O(D+n*log n) average complexity based on reuse of longest common prefix from each string comparison.
+An string quicksort with O(D+n*log n) average character comparisons based on reuse of the longest common prefix length from each string comparison.
+
+The Algorithm
+=============
 
 Recently a number of classic sorting algorithms have been modified to use lcp (longest common prefix) information during string comparisons.
 The key observation is that if two strings A,B have already been compared to a third key C, 
@@ -13,13 +16,14 @@ Lemma 1 (from lcp merge sort paper https://www.jstage.jst.go.jp/article/ipsjdc/4
 If A > C and B > C, and lcp(A,C) > lcp(B,C), then A < B. Proof follows from the fact that the first character
 after the lcp is the tie breaker for the comparison, and if lcp(A,C) > lcp(B,C), then B[lcp(B,C)] > C[lcp(B,C)] == A[lcp(B,C)], so B > A.
 
-ASCII art version:
 
 If we imagine the per-character strcmp results as follows (either = or >), we see why a longer lcp matters:
 
     C: XXXXXXXXXXX... (some chars)
     A: ========>
     B: ===>
+
+(Figure 1)
 
 The character point where B > C is also the point where B > A.
 
@@ -70,7 +74,7 @@ The algorithm:
     0.  If lo >= hi return.
     1.  Pick a pivot P_new among a[lo:hi].  Set vlcp = lcp(P_new, P_old).
     2.  if direction == 1, partition a and lcp into 3 buckets 
-    having lcp(a[i], P\_prev) > vlcp, lcp == vlcp, and lcp < vlcp.  Let lt:gt be the range of ==.
+    having lcp(a[i], P_prev) > vlcp, lcp == vlcp, and lcp < vlcp.  Let lt:gt be the range of ==.
     3.  If direction == -1, do as in step 2 but reverse the partition (<, ==, >).
     4.  lcpquicksort( a, lcp, lo, lt-1, direction )
     5.  lcpquicksort( a, lcp, gt+1, hi, direction )
@@ -119,6 +123,6 @@ A maximum on lcp length should just incur more comparisons but not sink the whol
 is that a) more keys will agree on lcp and incur character comparisons in the middle, and b) character comparisons 
 will be duplicated at positions beyond the maximum, but pivoting will be correct at each level.
 
-Rounding may also work, with similar impact of more comparisons but correct behavior.
+Rounding is also possible, with similar impact of more comparisons but correct behavior.
 lcp's can be small integers in units of k characters, eg k = 16 or the cache line size, to save
-bits.
+bits.  Tests show some slowdown from the extra comparisons.
