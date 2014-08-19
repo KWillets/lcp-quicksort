@@ -1,7 +1,7 @@
 lcp-quicksort
 =============
 
-An string quicksort based on reuse of longest common prefix from each string comparison.
+An string quicksort with O(D+n*log n) average complexity based on reuse of longest common prefix from each string comparison.
 
 Recently a number of classic sorting algorithms have been modified to use lcp (longest common prefix) information during string comparisons.
 The key observation is that if two strings A,B have already been compared to a third key C, 
