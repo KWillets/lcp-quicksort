@@ -39,16 +39,21 @@ void lcpinsertionsort( Item a[], Lcp lcp[], int lo, int hi, int direction) {
 	exch(a, lcp, j, j-1);
 
   // sort runs of identical lcp
-  int r=hi, lcpr = lcp[hi];
+  int r=hi, lcpr = lcp[hi];  // start from right
   for( i = hi-1; i >= lo; i-- ) 
     if( lcp[i] == lcpr ) {
-      int ilcp = lcpr;
-      int cmpr = lcpstrcmp( a[i], a[i+1], &ilcp);
-      if( cmpr > 0 ) {
-	for( j = i; j < r && ( ilcp < lcp[j] || (ilcp == lcp[j] && lcpstrcmp( a[j-1],a[j], &ilcp) < 0) ); j++ )
+      int cmpr = lcpstrcmp( a[i], a[i+1], lcp+i );
+      if( cmpr < 0 ) {
+	for( j = i; j < r && lcp[j] < lcp[j+1] ; j++ )
 	  {
-	    // move lcp's
-	  exch(a, lcp, j, j+1);
+            if((lcp[j] == lcp[j+1] && lcpstrcmp( a[j],a[j+1], lcp+j)) >= 0) {  // if same lcp do compare
+              // if j <= j+1 swap result lcp to j+1
+              Lcp t = lcp[j];
+              lcp[j]=lcp[j+1];
+              lcp[j+1]=t;
+              break;
+            }
+            exch(a, lcp, j, j+1); 
 	  }
       }
     } else 
