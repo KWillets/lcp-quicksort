@@ -19,5 +19,8 @@ genesort: lcp-quicksort.o genesort.o
 blobsort: lcp-quicksort.o blobsort.o
 	gcc -o $@ $^ $(CFLAGS)
 
+perftest: lcp-quicksort.o perftest.o demolib.o
+	gcc -o $@ $^ $(CFLAGS)
+
 clean:  
-	rm $(OBJ)
+	rm *.o

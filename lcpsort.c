@@ -4,10 +4,10 @@
 #include <time.h>
 #include "lcp-quicksort.h"
 
-void dumpitems( Item s[], int n, Lcp lcp[]) {
+void dumpitems( Item s[], int n) {
   int i;
   for( i=0; i < n; i++ ) {
-    printf( "%s", s[i] );
+    printf( "%s", s[i].str );
   };
   //  printf("\n----\n\n");
 }
@@ -28,7 +28,7 @@ Item *readitems( char *fname, int *pn ) {
 	  nalloc <<=1;
 	  a = realloc( a, sizeof(Item) * nalloc);
 	}
-	a[n++] = strdup(buf);
+	a[n++].str = strdup(buf);
       }
     }
     *pn = n;
@@ -41,20 +41,20 @@ int main(int argc, char **argv) {
     int n=0, d=0, i;
     Item *a = readitems( argv[1], &n );
 
-    Lcp *lcp = calloc( n, sizeof(Lcp));
+    //    Lcp *lcp = calloc( n, sizeof(Lcp));
 
     int t=clock();
 
-    lcpquicksort( a, lcp, 0, n-1, 1 );
+    lcpquicksort( a, 0, n-1, 1 );
 
     //    stringsort(a,n);
     float secs = (clock()-t)*1.0/CLOCKS_PER_SEC;
 
     for( i = 0; i < n; i++)
-      d += lcp[i];
+      d += a[i].lcp;
     fprintf(stderr, "n=%d D=%d time=%6.5f\n",n, d, secs );
 
-    dumpitems(a,n,lcp);
+    dumpitems(a,n);
     exit(0);
   }
   else printf("usage: %s <filename>\n", argv[0]);
