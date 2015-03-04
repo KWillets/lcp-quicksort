@@ -8,6 +8,11 @@ The algorithm requires fewer key accesses (ie cache misses) than radix-iterating
 this algorithm has less recursive overhead and fewer cache misses than Multikey Quicksort.  The latter algorithm makes one recursive call for each node on a trie 
 built from the data, while this algorithm only makes one call for each node on a Patricia tree built from the data.  
 
+Building
+========
+
+$ make lcpsort
+$ make lcpsort-sse
 
 
 The Algorithm

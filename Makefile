@@ -11,5 +11,8 @@ OBJ = lcp-quicksort.o test.o
 lcpsort: lcp-quicksort.o lcpsort.o
 	g++ -o $@ $^ $(CFLAGS)
 
+lcpsort-sse: lcp-quicksort-sse.o lcpsort.o
+	g++ -o $@ $^ $(CFLAGS)
+
 clean:  
 	rm *.o
