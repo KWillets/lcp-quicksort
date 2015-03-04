@@ -2,59 +2,58 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 #include "lcp-quicksort.h"
 
-void dumpitems( Item s[], int n) {
+void dumpitems( char * s[], int n) {
   int i;
   for( i=0; i < n; i++ ) {
-    printf( "%s", s[i].str );
+    printf( "%s", s[i] );
   };
   //  printf("\n----\n\n");
 }
 
-Item *readitems( char *fname, int *pn ) {
+char ** readitems( char *fname, int *pn ) {
     int n=0;
-    Item *a = NULL;
+    char **s = NULL;
     FILE * fd = fopen(fname, "r");
     if( fd == NULL ) 
       fprintf(stderr, "fopen %s failed\n", fname);
     else {
-      int nalloc = 1<<15;
-      a=calloc(sizeof(Item), nalloc);
+      int nalloc = 1<<16;
+      s=(char **) calloc(sizeof(char *), nalloc);
 
-      char buf[8096];
-      while( fgets(buf, 8096, fd) ) {
+      char buf[32000];
+      while( fgets(buf, 32000, fd) ) {
 	if( n >= nalloc ) {
 	  nalloc <<=1;
-	  a = realloc( a, sizeof(Item) * nalloc);
+	  s = (char **) realloc( s, sizeof(char *) * nalloc);
 	}
-	a[n++].str = strdup(buf);
+        
+	s[n++] = strdup(buf);
+
       }
     }
     *pn = n;
-    return a;
+    return s;
 }
+
+
 
 int main(int argc, char **argv) {
 
   if( argc >1 ) {
     int n=0, d=0, i;
-    Item *a = readitems( argv[1], &n );
-
-    //    Lcp *lcp = calloc( n, sizeof(Lcp));
+    char **s = readitems( argv[1], &n );
 
     int t=clock();
 
-    lcpquicksort( a, 0, n-1, 1 );
+    stringsort( s, n );
 
-    //    stringsort(a,n);
     float secs = (clock()-t)*1.0/CLOCKS_PER_SEC;
+    fprintf(stderr, "n=%d time=%6.5f\n",n, secs );
 
-    for( i = 0; i < n; i++)
-      d += a[i].lcp;
-    fprintf(stderr, "n=%d D=%d time=%6.5f\n",n, d, secs );
-
-    dumpitems(a,n);
+    dumpitems(s,n);
     exit(0);
   }
   else printf("usage: %s <filename>\n", argv[0]);

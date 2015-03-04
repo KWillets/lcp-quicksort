@@ -1,11 +1,5 @@
-typedef int Lcp;
+#ifdef __cplusplus
+extern "C"
+#endif
+ void stringsort( char const * s[], int n );
 
-typedef struct _Item {
-  char *str;
-  Lcp lcp;
-} Item;
-
-
-void lcpquicksort(Item a[], int l, int r, int direction);
-void stringsort( Item a[], int n );
-//void lcpinsertionsort( Item a[], Lcp lcp[], int lo, int hi, int direction);
