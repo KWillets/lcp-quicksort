@@ -14,5 +14,8 @@ lcpsort: lcp-quicksort.o lcpsort.o
 lcpsort-sse: lcp-quicksort-sse.o lcpsort.o
 	g++ -o $@ $^ $(CFLAGS)
 
+lcpsort-cache: lcp-quicksort-cache.o lcpsort.o
+	g++ -o $@ $^ $(CFLAGS)
+
 clean:  
 	rm *.o
