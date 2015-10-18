@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
 
   if( argc >1 ) {
     int n=0, d=0, i;
-    char **s = readitems( argv[1], &n );
+    char  **s = readitems( argv[1], &n );
 
     int t=clock();
 
@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
     float secs = (clock()-t)*1.0/CLOCKS_PER_SEC;
     fprintf(stderr, "n=%d time=%6.5f\n",n, secs );
 
-    dumpitems(s,n);
+       dumpitems(s,n);
     exit(0);
   }
   else printf("usage: %s <filename>\n", argv[0]);

@@ -1,24 +1,26 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <algorithm>
 #include "lcp-quicksort.h"
 
 typedef int Lcp;
 
-inline int lcpstrcmp( char const * const p, char const * const q, Lcp &i) {
-  for( ; !(q[i] - p[i]) && p[i]; i++ )
+inline void lcpstrcmp( char * p, char * q, Lcp &i) {
+  for( ; q[i] == p[i] && q[i]; i++ )
     ;
-  return q[i]-p[i];
+  //  return q[i]-p[i];
+  return;
 }
 
-inline void exch( char const *strings[], Lcp lcps[], int I, int J) { 
+inline void exch( char *strings[], Lcp lcps[], int I, int J) { 
   std::swap(strings[I],strings[J]);
   std::swap(lcps[I],lcps[J]);
 }
 
-void strsort(char const * strings[], Lcp lcps[], int lo, int hi );
+void strsort(char * strings[], Lcp lcps[], int lo, int hi );
 
 template <bool ascending>
-void lcpsort( char const * strings[], Lcp lcps[], int lo, int hi ) {
+void lcpsort( char * strings[], Lcp lcps[], int lo, int hi ) {
   if ( hi <= lo ) return;
   int lt = lo, gt = hi;
 
@@ -34,17 +36,17 @@ void lcpsort( char const * strings[], Lcp lcps[], int lo, int hi ) {
   lcpsort<ascending>( strings, lcps, gt+1, hi );
 };
 
-void strsort(char const * strings[], Lcp lcps[], int lo, int hi )
+void strsort(char * strings[], Lcp lcps[], int lo, int hi )
 {
   if ( hi <= lo ) return;
   int lt = lo, gt = hi;
 
-  char const * const pivotStr = strings[lo];
+  char * pivotStr = strings[lo];
   for( int i = lo + 1; i <= gt; )
     {
-      int cmpr = lcpstrcmp( pivotStr, strings[i], lcps[i] );
-      if      (cmpr < 0) exch( strings, lcps, lt++, i++);
-      else if (cmpr > 0) exch( strings, lcps, i, gt--);
+      lcpstrcmp( pivotStr, strings[i], lcps[i] ); // scan lcp only
+      if      (pivotStr[lcps[i]] > strings[i][lcps[i]] ) exch( strings, lcps, lt++, i++);
+      else if (pivotStr[lcps[i]] < strings[i][lcps[i]]) exch( strings, lcps, i, gt--);
       else            i++;
     }
 
@@ -52,8 +54,13 @@ void strsort(char const * strings[], Lcp lcps[], int lo, int hi )
   lcpsort<false>( strings, lcps, gt+1, hi );  
 };
 
-extern "C" void stringsort( char const * strings[], int n ) {
+extern "C" void stringsort( char* strings[], int n ) {
   Lcp *lcps = (Lcp *) calloc( n, sizeof(Lcp)); 
   strsort( strings, lcps, 0, n-1 );
+  int totlcp = 0;
+  for( int i = 0; i < n; i++ )
+    totlcp += lcps[i];
+
+                   fprintf(stderr, "avg lcp=%f\n", (totlcp*1.0)/n );
   free(lcps);
 }

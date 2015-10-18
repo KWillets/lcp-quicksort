@@ -1,81 +1,103 @@
 #include <stdlib.h>
 #include <algorithm>
+#include <stdio.h>
 #include "lcp-quicksort.h"
 
-typedef int Lcp;
-typedef unsigned int Tcache;
+typedef long int Tcache;
 
-typedef struct {
-  Lcp lcp;
-  Tcache cache;
-} StrInfo;
-
-inline int lcpstrcmp( char const * const p, char const * const q, Lcp &i) {
-  for( ; !(q[i] - p[i]) && p[i]; i++ )
-    ;
-  return q[i]-p[i];
+// branchless abs                                                                                                                                                         
+Tcache my_abs(Tcache a) {
+  Tcache mask = (a >> (sizeof(Tcache) * 8 - 1));
+  return (a + mask) ^ mask;
 }
 
-inline void exch( char const *strings[], StrInfo lcps[], int I, int J) { 
+#define LCP_BITS  16
+#define STR_BYTES (sizeof(Tcache)-LCP_BITS/8)
+#define SIGN_BIT ( ((Tcache)1)<<( 8*sizeof(Tcache) - 1 ))
+
+#define c_to_lcp(c) ((c<<1) >> (8*sizeof(Tcache)-LCP_BITS+1))
+
+#define lcp_to_c(c) (((c) << (8*sizeof(Tcache)-LCP_BITS))&~SIGN_BIT)
+
+#define c_to_char(c,ii) ((char)(0xFF & (c >> (8*(STR_BYTES-ii-1)))))
+#define char_to_c(c, ii) (((Tcache)c) << 8*(STR_BYTES-ii-1))
+#define nonterminal(c) ((Tcache) 0xFF & c)
+
+Tcache lcpstrcmp( char  *  p, char  *  q, Tcache c) {
+
+  Tcache i = my_abs(c_to_lcp(c));
+  
+  for( ; q[i] == p[i] && p[i]; i++ )
+    ;
+
+  if( q[i] == p[i] )
+    return 0;
+
+  Tcache d = 0;
+  Tcache sign = 0;
+  Tcache lcp = i+STR_BYTES;  // where to start next time
+  if( q[i] > p[i] )
+    {
+      //      sign = 0;
+      lcp = -lcp;
+    }
+  else {
+    sign = SIGN_BIT;
+    //    lcp = i;
+  }
+  d =  sign | lcp_to_c( lcp );  // q > p ==> invert order                                                                                                                               
+  for( int j = 0; q[i+j] && j < STR_BYTES; j++ )
+    {
+      d |= char_to_c( q[i+j], j );
+    }
+
+    return d;
+}
+
+inline void exch( char  *strings[], Tcache lcps[], int I, int J) { 
   std::swap(strings[I],strings[J]);
   std::swap(lcps[I],lcps[J]);
 }
 
-void strsort(char const * strings[], StrInfo lcps[], int lo, int hi );
+void strsort(char  * strings[], Tcache lcps[], int lo, int hi );
 
-template <bool ascending>
-void lcpsort( char const * strings[], StrInfo lcps[], int lo, int hi ) {
+void lcpsort(char  * strings[], Tcache lcps[], int lo, int hi ) {
   if ( hi <= lo ) return;
   int lt = lo, gt = hi;
 
-  Lcp pivot = lcps[lo].lcp;
+  Tcache pivot = lcps[lo];
   for( int i = lo + 1; i <= gt; ) {
-    if      ( ascending ? lcps[i].lcp > pivot : lcps[i].lcp < pivot ) exch( strings, lcps, i, gt--);
-    else if ( ascending ? lcps[i].lcp < pivot : lcps[i].lcp > pivot ) exch( strings, lcps, lt++, i++);
+    if      ( lcps[i] > pivot ) exch( strings, lcps, i, gt--);
+    else if ( lcps[i] < pivot ) exch( strings, lcps, lt++, i++);
     else            i++;
   }
 
-  strsort<false>( strings, lcps, lt, gt );
-  lcpsort<ascending>( strings, lcps, lo, lt-1 );
-  lcpsort<ascending>( strings, lcps, gt+1, hi );
+  if( nonterminal( pivot ))
+    strsort( strings, lcps, lt, gt );
+  lcpsort( strings, lcps, lo, lt-1 );
+  lcpsort( strings, lcps, gt+1, hi );
 };
 
-template<bool cacheDirty>
-void strsort(char const * strings[], StrInfo lcps[], int lo, int hi )
+void strsort(char  * strings[], Tcache lcps[], int lo, int hi )
 {
   if ( hi <= lo ) return;
   int lt = lo, gt = hi;
 
-  char const * const pivotStr = strings[lo];
-  StrInfo pInfo = lcps[lo];
+  char  *  pivotStr = strings[lo];
   for( int i = lo + 1; i <= gt; )
     {
-      int cmpr;
-      if( cacheDirty || lcps[i].cache == pInfo.cache ) {  // 0 ok?
-	// char comp + extend cache
-	lcps[i].lcp += cacheDirty ? 0 : sizeof(Tcache);
-	cmpr = lcpstrcmp( pivotStr, strings[i], lcps[i].lcp ); 
-	// set new cache
-	Tcache c = 0;
-	for( int j = 0; j < sizeof( Tcache ) && strings[i][j]; j++ ) {
-	  c |= strings[i][j] << (sizeof( Tcache )-j-1)*8;
-	}
-	lcps[i].cache = c;
-      } else
-	cmpr = lcps[i].cache > pInfo.cache ? 1 : -1; 
-
-
-      if      (cmpr < 0) exch( strings, lcps, lt++, i++);
-      else if (cmpr > 0) exch( strings, lcps, i, gt--);
+      lcps[i] = lcpstrcmp( pivotStr, strings[i], lcps[i] );
+      if      (lcps[i] < 0) exch( strings, lcps, lt++, i++);
+      else if (lcps[i] > 0) exch( strings, lcps, i, gt--);
       else            i++;
     }
 
-  lcpsort<true> ( strings, lcps, lo, lt-1 );
-  lcpsort<false>( strings, lcps, gt+1, hi );  
+  lcpsort( strings, lcps, lo, lt-1 );
+  lcpsort( strings, lcps, gt+1, hi );  
 };
 
-extern "C" void stringsort( char const * strings[], int n ) {
-  StrInfo *lcps = (StrInfo *) calloc( n, sizeof(StrInfo)); 
-  strsort<true>( strings, lcps, 0, n-1 );
+extern "C" void stringsort( char  * strings[], int n ) {
+  Tcache *lcps = (Tcache *) calloc( n, sizeof(Tcache)); 
+  strsort( strings, lcps, 0, n-1 );
   free(lcps);
 }

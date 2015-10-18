@@ -1,5 +1,5 @@
 #ifdef __cplusplus
 extern "C"
 #endif
- void stringsort( char const * s[], int n );
+ void stringsort( char * s[], int n );
 
