@@ -7,7 +7,7 @@ typedef int Lcp;
 
 inline void lcpstrcmp( char * p, char * q, Lcp &i) {
   for( ; q[i] == p[i] && q[i]; i++ )
-    ;
+    ncmp++;
   //  return q[i]-p[i];
   return;
 }

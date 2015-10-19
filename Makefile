@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-I. -O4 -funroll-loops
+CFLAGS=-I. -O3 -funroll-loops
 CPPFLAGS=$(CFLAGS)
 
 DEPS = lcp-quicksort.h

@@ -42,6 +42,7 @@ char ** readitems( char *fname, int *pn ) {
 
 int main(int argc, char **argv) {
 
+  ncmp=0;
   if( argc >1 ) {
     int n=0, d=0, i;
     char  **s = readitems( argv[1], &n );
@@ -51,7 +52,7 @@ int main(int argc, char **argv) {
     stringsort( s, n );
 
     float secs = (clock()-t)*1.0/CLOCKS_PER_SEC;
-    fprintf(stderr, "n=%d time=%6.5f\n",n, secs );
+    fprintf(stderr, "n=%d time=%6.5f  ncmp=%ld \n",n, secs, ncmp );
 
        dumpitems(s,n);
     exit(0);
