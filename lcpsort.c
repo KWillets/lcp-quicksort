@@ -5,7 +5,7 @@
 #include <math.h>
 #include "lcp-quicksort.h"
 
-void dumpitems( char * s[], int n) {
+void dumpitems( unsigned char * s[], int n) {
   int i;
   for( i=0; i < n; i++ ) {
     printf( "%s", s[i] );
@@ -13,21 +13,21 @@ void dumpitems( char * s[], int n) {
   //  printf("\n----\n\n");
 }
 
-char ** readitems( char *fname, int *pn ) {
+unsigned char ** readitems( unsigned char *fname, int *pn ) {
     int n=0;
-    char **s = NULL;
+    unsigned char **s = NULL;
     FILE * fd = fopen(fname, "r");
     if( fd == NULL ) 
       fprintf(stderr, "fopen %s failed\n", fname);
     else {
       int nalloc = 1<<16;
-      s=(char **) calloc(sizeof(char *), nalloc);
+      s=(unsigned char **) calloc(sizeof(unsigned char *), nalloc);
 
-      char buf[32000];
+      unsigned char buf[32000];
       while( fgets(buf, 32000, fd) ) {
 	if( n >= nalloc ) {
 	  nalloc <<=1;
-	  s = (char **) realloc( s, sizeof(char *) * nalloc);
+	  s = (unsigned char **) realloc( s, sizeof(unsigned char *) * nalloc);
 	}
         
 	s[n++] = strdup(buf);
@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
   ncmp=0;
   if( argc >1 ) {
     int n=0, d=0, i;
-    char  **s = readitems( argv[1], &n );
+    unsigned char  **s = readitems( argv[1], &n );
 
     int t=clock();
 
