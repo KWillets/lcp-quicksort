@@ -20,13 +20,14 @@ Tcache my_abs(Tcache a) {
 
 #define c_to_char(c,ii) ((unsigned char)(0xFF & (c >> (8*(STR_BYTES-ii-1)))))
 #define char_to_c(c, ii) (((Tcache)c) << 8*(STR_BYTES-ii-1))
+
 #define nonterminal(c) ((Tcache) 0xFF & c)
 
 
 Tcache lcpstrcmp( unsigned char  *  p, unsigned char  *  q, int i) {
 
   for( ; q[i] == p[i] && q[i]; i++ )
-    ncmp++;
+    ;
 
   Tcache d;
   if( q[i] == p[i] )
@@ -35,7 +36,7 @@ Tcache lcpstrcmp( unsigned char  *  p, unsigned char  *  q, int i) {
     d =   SIGN_BIT | lcp_to_c( i+STR_BYTES );
   else
     d = -(SIGN_BIT | lcp_to_c( i+STR_BYTES ));
-  
+
   Tcache m=0;
   for( int j = 0; j < STR_BYTES; j++ )  // unroll me please
     {

@@ -5,13 +5,6 @@
 
 typedef int Lcp;
 
-inline void lcpstrcmp( unsigned char * p, unsigned char * q, Lcp &i) {
-  for( ; q[i] == p[i] && q[i]; i++ )
-    ;
-  //  return q[i]-p[i];
-  return;
-}
-
 inline void exch( unsigned char *strings[], Lcp lcps[], int I, int J) { 
   std::swap(strings[I],strings[J]);
   std::swap(lcps[I],lcps[J]);
@@ -50,12 +43,12 @@ void strsort(unsigned char * strings[], Lcp lcps[], int lo, int hi )
 
   unsigned char * p = strings[lo];
   Lcp j,k= lcps[lo];
+
   for( int i = lo + 1; i <= gt; )
     {
       unsigned char *q = strings[i];
-      for( j=k; p[j] == q[j] && p[j] ; j++ )
+      for( j = k; p[j] == q[j] && p[j] ; j++ )
 	;
-      //      lcps[i]=j;
       if      (p[j] > q[j] ) qexch( strings, lcps, i++, lt++, q, j );
       else if (p[j] < q[j] ) qexch( strings, lcps, i,   gt--, q, j );
       else            i++;
