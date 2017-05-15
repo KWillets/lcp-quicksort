@@ -3,68 +3,67 @@
 #include <algorithm>
 #include "lcp-quicksort.h"
 
-typedef int Lcp;
+typedef size_t Lcp;
+typedef unsigned char StrChar;
 
-inline void exch( unsigned char *strings[], Lcp lcps[], int I, int J) { 
-  std::swap(strings[I],strings[J]);
-  std::swap(lcps[I],lcps[J]);
+Lcp strlcp( StrChar *p, StrChar *q, Lcp l )
+{
+  while( p[l] == q[l] && p[l] )
+    l++;
+  return l;
 }
 
-void strsort(unsigned char * strings[], Lcp lcps[], int lo, int hi );
+inline void exch( StrChar *strings[], Lcp lcps[], int I, int J ) {
+  std::swap( strings[I], strings[J] );
+  std::swap( lcps[I], lcps[J] );
+}
 
-template <bool ascending>
-void lcpsort( unsigned char * strings[], Lcp lcps[], int lo, int hi ) {
-  if ( hi <= lo ) return;
+void strsort( StrChar * strings[], Lcp lcps[], int lo, int hi, Lcp depth );
+
+enum Order { ascending, descending };
+template <Order order>
+void lcpsort( StrChar * strings[], Lcp lcps[], int lo, int hi ) {
   int lt = lo, gt = hi;
 
   Lcp pivot = lcps[lo];
+
   for( int i = lo + 1; i <= gt; ) {
-    if      ( ascending ? lcps[i] > pivot : lcps[i] < pivot ) exch( strings, lcps, i, gt--);
-    else if ( ascending ? lcps[i] < pivot : lcps[i] > pivot ) exch( strings, lcps, lt++, i++);
-    else            i++;
+    if      ( order == ascending ? lcps[i] > pivot : lcps[i] < pivot ) exch( strings, lcps, i,    gt-- );
+    else if ( order == ascending ? lcps[i] < pivot : lcps[i] > pivot ) exch( strings, lcps, i++,  lt++ );
+    else    i++;
   }
 
-  strsort( strings, lcps, lt, gt );
-  lcpsort<ascending>( strings, lcps, lo, lt-1 );
-  lcpsort<ascending>( strings, lcps, gt+1, hi );
+  if( gt > lt )   strsort( strings, lcps, lt, gt, pivot );
+  if( lt-1 > lo ) lcpsort<order>( strings, lcps, lo, lt-1 );
+  if( hi > gt+1 ) lcpsort<order>( strings, lcps, gt+1, hi );
 };
 
-void qexch( unsigned char ** s, Lcp *l, int i, int dst, unsigned char *stmp, Lcp ltmp ) {
-  l[i]=l[dst];
-  s[i]=s[dst];
-  l[dst]=ltmp;
-  s[dst]=stmp;
+void strexch( StrChar ** strs, Lcp *lcps, int i, int dst, Lcp ltmp ) {
+  lcps[i] = lcps[dst]; lcps[dst] = ltmp;
+  std::swap( strs[i], strs[dst] );
 }
 
-void strsort(unsigned char * strings[], Lcp lcps[], int lo, int hi )
+void strsort( StrChar * strings[], Lcp lcps[], int lo, int hi, Lcp depth )
 {
-  if ( hi <= lo ) return;
   int lt = lo, gt = hi;
 
-  unsigned char * p = strings[lo];
-  Lcp j,k= lcps[lo];
+  StrChar *pivot = strings[lo];
 
   for( int i = lo + 1; i <= gt; )
     {
-      unsigned char *q = strings[i];
-      for( j = k; p[j] == q[j] && p[j] ; j++ )
-	;
-      if      (p[j] > q[j] ) qexch( strings, lcps, i++, lt++, q, j );
-      else if (p[j] < q[j] ) qexch( strings, lcps, i,   gt--, q, j );
-      else            i++;
+      StrChar *q = strings[i];
+      Lcp j = strlcp( pivot, q, depth );
+      if      ( pivot[j] < q[j] ) strexch( strings, lcps, i,   gt--, j );
+      else if ( pivot[j] > q[j] ) strexch( strings, lcps, i++, lt++, j );
+      else    i++;
     }
 
-  lcpsort<true> ( strings, lcps, lo, lt-1 );
-  lcpsort<false>( strings, lcps, gt+1, hi );  
+  if( lt-1 > lo ) lcpsort<ascending> ( strings, lcps, lo, lt-1 );
+  if( hi > gt+1 ) lcpsort<descending>( strings, lcps, gt+1, hi );
 };
 
-extern "C" void stringsort( unsigned char* strings[], int n ) {
-  Lcp *lcps = (Lcp *) calloc( n, sizeof(Lcp)); 
-  strsort( strings, lcps, 0, n-1 );
-  int totlcp = 0;
-  //  for( int i = 0; i < n; i++ )
-  //  totlcp += lcps[i];
-
-  //                 fprintf(stderr, "avg lcp=%f\n", (totlcp*1.0)/n );
-  free(lcps);
+extern "C" void stringsort( StrChar* strings[], int n ) {
+  Lcp *lcps = (Lcp *) calloc( n, sizeof(Lcp) );
+  strsort( strings, lcps, 0, n-1, 0 );
+  free( lcps );
 }

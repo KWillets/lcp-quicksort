@@ -1,7 +1,7 @@
 lcp-quicksort
 =============
 
-A string-sorting algorithm which uses longest common prefix (LCP) found during string comparisons to sub-sort the data after each pass.  The primary benefit of this method is that it allows the entire LCP of each key pair to be consumed in each pass, thereby outperforming algorithms which increase the radix by only a fixed amount.  For strings with long LCP's (long distinguishing prefixes) this difference is significant in the number of passes through the data (log n vs. D/n), cache complexity, instruction count, and other overheads such as stack depth.  It is in-place except for an auxillary array of n LCP values, and the stack.  
+A string-sorting algorithm which uses longest common prefix (LCP) found during string comparisons to sub-sort the data after each pass.  The primary benefit of this method is that it allows the entire LCP of each key pair to be consumed in each pass, thereby outperforming algorithms which increase the radix by only a fixed amount.  For strings with long LCP's (long distinguishing prefixes) this difference is significant in the number of passes through the data (log n vs. D/n), cache complexity, instruction count, and other overheads such as stack depth.  It is in-place except for an auxiliary array of n LCP values, and the stack.  
 
 While the optimal number of comparisons O(D + n log n) has already been reached by a number of algorithms, the benefit here is a smaller coefficient on D (asymptotically the maximum throughput of SIMD string instructions, currently around 5.33 bytes/cycle).  Very long keys, such as files or disk blocks, can be sorted for only a fraction of a cycle per byte.  
 
