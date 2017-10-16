@@ -1,9 +1,13 @@
 lcp-quicksort
 =============
 
-A string-sorting algorithm which uses longest common prefix (LCP) found during string comparisons to sub-sort the data after each pass.  The primary benefit of this method is that it allows the entire LCP of each key pair to be consumed in each pass, thereby outperforming algorithms which increase the radix by only a fixed amount.  For strings with long LCP's (long distinguishing prefixes) this difference is significant in the number of passes through the data (log n vs. D/n), cache complexity, instruction count, and other overheads such as stack depth.  It is in-place except for an auxiliary array of n LCP values, and the stack.  
+It only takes o(n log n) bits to sort n strings, we just don't know which ones.
 
-While the optimal number of comparisons O(D + n log n) has already been reached by a number of algorithms, the benefit here is a smaller coefficient on D (asymptotically the maximum throughput of SIMD string instructions, currently around 5.33 bytes/cycle).  Very long keys, such as files or disk blocks, can be sorted for only a fraction of a cycle per byte.  
+LCP Quicksort uses string comparisons against a pivot, but then uses the length of the longest common prefix against the pivot (LCP) to subpartition the data after each pass.  Each subpartition is then recursively sorted starting from its known common prefix.
+
+This subpartitioning works because, in sorted order, LCP is nondecreasing for keys less than a pivot, and nonincreasing for keys greater than it.  So we place the subpartitions in ascending order in the lower partition, and descending order in the upper, and obtain a partial ordering of the data.  We then recursively sort each subpartition in place.
+
+The primary benefit of this method is that it finds one bit of difference in each comparison, and o(n) bits of difference in each pass, so it only needs to do o(log n) passes on average, regardless of how deeply buried these distinguishing bits are in the data. Radix-based sorts do not have this guarantee, so they can require in the worst case cache misses proportional to total key length (O(D)).
 
 Building
 ========
